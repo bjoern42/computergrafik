@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Workspace Name="computergrafik" Database="/home/peterlustig/eigene_dateien/HTWG/Semester_7/Computergrafik/codelite_workspace/computergrafik/.codelite/computergrafik.tags">
+  <Project Name="Uebung1" Path="Uebung1/Uebung1.project" Active="Yes"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Project Name="Uebung1" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Project Name="Uebung1" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>

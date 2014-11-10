@@ -197,99 +197,83 @@ void setMirroredPoint(Point center, Point p, Color c){
 // p1 und p2 in der Farbe c malen. Benutzen Sie die Funktion
 // setPoint um die individuellen Punkte zu zeichnen.
 void bhamLine (Point p1, Point p2, Color c) {
-	bool xy_swaped = false;
-	
-go:
-	int inc_x = 1;
-	int inc_y = 1;
+	bool xy_swapped = false;
+	bool x_inverted = false;
+	bool y_inverted = false;
 
-	int delta_x = p2.x -  p1.x;
-	int delta_y = p2.y - p1.y;
+	Point origin(0,0);
+
+	//draw start-/endpoint
+	setPoint(p1, c);
+	setPoint(p2, c);
 	
-	if( delta_x < 0 ){
-		// p2.x greater than p1.x
-		delta_x = - delta_x;
-		inc_x = -inc_x;
+	//set p1 as origin -> move p2 accordingly
+	p2.x -= p1.x;
+	p2.y -= p1.y;
+	
+	//invert x if negativ
+	if( p2.x < 0 ){
+		x_inverted = true;
+		p2.x = -p2.x;
+	}
+	//invert y if negativ
+	if( p2.y < 0 ){
+		y_inverted = true;
+		p2.y = -p2.y;
+	}
+	//swapp x and y if m > 1
+	if( p2.x < p2.y ){
+		xy_swapped = true;
+		int tmp = p2.x;
+		p2.x = p2.y;
+		p2.y = tmp;
 	}
 
-	if( delta_y < 0 ){
-		// p2.y greater than p1.y
-		delta_y = - delta_y;
-		inc_y = -inc_y;
-	}
+	int x = origin.x;
+	int y = origin.y;
 
-	if( delta_x < delta_y ){
-		//m greater than 1
-		xy_swaped = true;
-		p1.swapXY();
-		p2.swapXY();
-
-		goto go;
-	}
+	int delta_x = p2.x -  origin.x;
+	int delta_y = p2.y - origin.y;
 	
-	// actual bresenham algo
-	int x = p1.x;
-	int y = p1.y;
-
-	int endpoint = p2.x;
-
 	int delta_ne = 2 * (delta_y - delta_x);
 	int delta_e = 2 * delta_y;
 
 	int d = 2 * delta_y - delta_x;
-	
-	/*
-	cout << "drawing line from "; 
-	p1.print(); 
-	cout << " to ";
-	p2.print();
-	cout << "." << endl;
 
-	cout << "xy_swapped: " << xy_swaped << endl;
-	cout << "delta_x: " << delta_x << endl;
-	cout << "delta_y: " << delta_y << endl;
-	cout << "delta_ne: " << delta_ne << endl;
-	cout << "delta_e: " << delta_e << endl;
-	cout << "d: " << d << endl;
+	Point tmpP;
 
-	*/
-
-	if( xy_swaped ){
-		//restore points
-		p1.swapXY();
-		p2.swapXY();
-		endpoint = p2.y;
-	}
-	setPoint(p1, c);
-
-	Point tmp;
-
-	while( x != endpoint ){
-
-		x += inc_x;
+	while( x < p2.x ){
+		x++;
 		if( d > 0 ) {
 			//NE is next point
 			d += delta_ne;
-			y += inc_y;
+			y++;
 		}else{
 			//E is next point
 			d += delta_e;
 		}
 
-		//cout << "d: " << d << " x: " << x << " y: " << y << endl;
-		tmp = Point(x, y);
+		tmpP = Point(x, y);
 
-		if( xy_swaped ) {
-			tmp.swapXY();
+		//revert all changes made in inverted order
+		if( xy_swapped ) {
+			int tmp = tmpP.x;
+			tmpP.x = tmpP.y;
+			tmpP.y = tmp;
 		}
-		//tmp.print();
-		//cout << endl;
+		if( y_inverted ){
+			tmpP.y = -tmpP.y;
+		}
+		if( x_inverted ){
+			tmpP.x = -tmpP.x;
+		}
+		
+		tmpP.x += p1.x;
+		tmpP.y += p1.y;
 
-		setPoint(tmp, c);
+		//draw point
+		setPoint(tmpP, c);
 	}
-
-	// letzter Punkt
-	setPoint(p2, c);
 }
 
 //
