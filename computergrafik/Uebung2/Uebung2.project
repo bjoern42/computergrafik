@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="Uebung1" InternalType="Console">
+<CodeLite_Project Name="Uebung2" InternalType="Console">
   <Plugins>
     <Plugin Name="qmake">
       <![CDATA[00010001N0005Debug000000000000]]>
@@ -10,7 +10,7 @@
   "enabled": false,
   "buildDirectory": "build",
   "sourceDirectory": "$(ProjectPath)",
-  "generator": "Unix Makefiles",
+  "generator": "",
   "buildType": "",
   "arguments": [],
   "parentProject": ""
@@ -20,8 +20,10 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="Uebung1.cpp"/>
+    <File Name="mat.h"/>
+    <File Name="vec.h"/>
     <File Name="Makefile"/>
+    <File Name="Uebung2.cpp"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -36,14 +38,8 @@
     <Configuration Name="Debug" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-O0;-Wall" C_Options="-g;-O0;-Wall" Assembler="" Required="no" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
-        <IncludePath Value="../Utils"/>
       </Compiler>
-      <Linker Options="" Required="no">
-        <LibraryPath Value="../Utils"/>
-        <Library Value="GL"/>
-        <Library Value="GLU"/>
-        <Library Value="glut"/>
-      </Linker>
+      <Linker Options="" Required="no"/>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
@@ -54,9 +50,7 @@
         <PostConnectCommands/>
         <StartupCommands/>
       </Debugger>
-      <PreBuild>
-        <Command Enabled="yes">make</Command>
-      </PreBuild>
+      <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="no">
         <RebuildCommand/>
