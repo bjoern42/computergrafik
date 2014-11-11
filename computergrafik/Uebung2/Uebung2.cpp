@@ -1,11 +1,10 @@
 // Sample code for Übung 2
 #include <stdio.h>
 #include <iostream>
-#include <math.h> 
+
 using namespace std;
 
-#include "vec.h"
-#include "mat.h"
+#include "Transformation.h"
 #include <Point.hpp>
 #include <Color.hpp>
 #include <Bresenham.hpp>
@@ -39,12 +38,13 @@ int g_iTimerMSecs;
 // private, global variables ... replace by your own ones
 //
 // some global state variables used to describe ...
+/*
 float g_iPos;		// ... position and ...
 float g_iPosIncr;	// ... position increment (used in display1)
 
 CVec2i g_vecPos;		// same as above but in vector form ...
 CVec2i g_vecPosIncr;	// (used in display2)
-
+*/
 
 //------------------------------------------
 int r_sun = 60;
@@ -53,9 +53,13 @@ int r_moon = 20;
 int margin_earth_moon = 10;
 int margin_sun_earth = 75;
 
-float startSun[] = {0,0};
+float startSun[] = {0, 0};
 float startEarth[] = {(startSun[0]+r_sun+r_earth+margin_sun_earth), 0};
 float startMoon[] = {(startEarth[0]+r_earth+r_moon+margin_earth_moon), 0};
+
+float startSun3[] = {0, 0, 1};
+float startEarth3[] = {(startSun[0]+r_sun+r_earth+margin_sun_earth), 0, 1};
+float startMoon3[] = {(startEarth[0]+r_earth+r_moon+margin_earth_moon), 0, 1};
 
 float angleSun = 0.5;
 float angleEarth = 0.2;
@@ -66,6 +70,10 @@ float angleEarthInc = 1;
 CVec2f sun(startSun);
 CVec2f earth(startEarth);
 CVec2f moon(startMoon);
+
+CVec3f sun3(startSun3);
+CVec3f earth3(startEarth3);
+CVec3f moon3(startMoon3);
 
 Color c_sun(1, 1, 0);
 Color c_earth(0, 0, 1);
@@ -78,10 +86,10 @@ Bresenham b(drawPoint);
 // function to initialize our own variables
 void init () 
 {
-
 	// init timer interval
 	g_iTimerMSecs = 10;
 
+	/*
 	// init variables for display1
 	g_iPos     = 0;
 	g_iPosIncr = 2;
@@ -91,6 +99,7 @@ void init ()
 	int aiPosIncr[2] = {2, 2};
 	g_vecPos.setData (aiPos);
 	g_vecPosIncr.setData (aiPosIncr);
+	*/ 
 }
 
 // function to initialize the view to ortho-projection
@@ -110,23 +119,6 @@ void initGL ()
 	glClearColor (0,0,0,1);
 }
 
-// Callback Funktion um die Fenstergrößen anzupassen.
-// Auch diese Funktion ist ein notwendiges Übel! Kümmern
-// Sie sich im Moment nicht weiter darum.
-void reshape(int w, int h) {
-
-	g_iWidth = w;
-	g_iHeight = h;
-
-	glViewport(0, 0, w, h);					// Establish viewing area to cover entire window.
-
-	glMatrixMode(GL_PROJECTION);			// Start modifying the projection matrix.
-	glLoadIdentity();						// Reset project matrix.
-	glOrtho(-w/2, w/2, -h/2, h/2, 0, 1);	// Map abstract coords directly to window coords.
-
-	glutPostRedisplay ();
-}
-
 int min (int a, int b) { return a>b? a: b; }
 // timer callback function
 void timer (int value) 
@@ -134,6 +126,8 @@ void timer (int value)
 	///////
 	// update your variables here ...
 	//
+	
+	/* don't know what these lines do ?!?
 
 	int size2 = min (g_iWidth, g_iHeight) / 2;
 
@@ -146,7 +140,7 @@ void timer (int value)
 	// variables for display2 ...
 	if (g_vecPos(1)<=-size2 || g_vecPos(1)>=size2) g_vecPosIncr = -g_vecPosIncr; 
 	g_vecPos += g_vecPosIncr;
-
+*/
 	//
 	///////
 
@@ -155,110 +149,29 @@ void timer (int value)
 	glutTimerFunc (g_iTimerMSecs, timer, 0);	// call timer for next iteration
 }
 
-CVec2f rotate(CVec2f p, float degree){
-	float degree_rad = degree * M_PI / 180;
-	float r_cos = cos(degree_rad);
-	float r_sin = sin(degree_rad);
-	
-	float r_Array[2][2];
-	r_Array[0][0] = r_cos;
-	r_Array[0][1] = r_sin;
-	r_Array[1][0] = -r_sin;
-	r_Array[1][1] = r_cos;
-	
-	CMat2f r(r_Array);
-	
-	return r*p;
-}
-
-CVec3f translate(CVec3f vP, CVec3f vT){
-	float t_Array[3][3];
-	t_Array[0][0] = 1;
-	t_Array[1][0] = 0;
-	t_Array[2][0] = 0;
-	t_Array[0][1] = 0;
-	t_Array[1][1] = 1;
-	t_Array[2][1] = 0;
-	t_Array[0][2] = vT(0);
-	t_Array[1][2] = vT(1);
-	t_Array[2][2] = 1;
-	
-	CMat3f t(t_Array);
-	
-	return t*vP;
-}
-
-CVec2f translate(CVec2f vP, CVec2f vT){	
-	float p_Array[3];
-	p_Array[0] = vP(0);
-	p_Array[1] = vP(1);
-	p_Array[2] = 1;
-	
-	CVec3f p(p_Array);
-	
-	float t_Array[3][3];
-	t_Array[0][0] = 1;
-	t_Array[1][0] = 0;
-	t_Array[2][0] = 0;
-	t_Array[0][1] = 0;
-	t_Array[1][1] = 1;
-	t_Array[2][1] = 0;
-	t_Array[0][2] = vT(0);
-	t_Array[1][2] = vT(1);
-	t_Array[2][2] = 1;
-	
-	CMat3f t(t_Array);
-	
-	CVec3f tmp = t*p;
-	
-	float data_p[2];
-	tmp.getData(data_p);
-
-	CVec2f ret(data_p);
-	return ret;
-} 
-
 // display callback function
 void display1 (void) 
 {
 	glClear (GL_COLOR_BUFFER_BIT);
 	///////
 	
-	earth = rotate(earth, angleSun);
-	moon = rotate(moon, angleSun);
+	//transformation
+	earth = Transformation::rotate(earth, angleSun);
+	moon = Transformation::rotate(moon, angleSun);
 
-	moon = translate(moon, -earth);
-	moon = rotate(moon, angleEarth);
-	moon = translate(moon, earth);
+	moon = Transformation::translate(moon, -earth);
+	moon = Transformation::rotate(moon, angleEarth);
+	moon = Transformation::translate(moon, earth);
 	
-	float tmp[2];
-	sun.getData(tmp);
-	Point pSun(tmp[0], tmp[1]);
-	earth.getData(tmp);
-	Point pEarth(tmp[0], tmp[1]);
-	moon.getData(tmp);
-	Point pMoon(tmp[0], tmp[1]);
+	
+	//draw stuff
+	Point pSun(sun(0), sun(1));
+	Point pEarth(earth(0), earth(1));
+	Point pMoon(moon(0), moon(1));
 	
 	drawCircle(pSun, r_sun, c_sun);
 	drawCircle(pEarth, r_earth, c_earth);
 	drawCircle(pMoon, r_moon, c_moon);
-	
-	// display your data here ...
-	
-	//exit(0);
-
-	/*
-	glBegin (GL_TRIANGLES);
-		glColor3f (1,0,0);
-		glVertex2i (g_iPos, 0);
-		glColor3f (0,1,0);
-		glVertex2i (-g_iPos, g_iPos);
-		glColor3f (0,0,1);
-		glVertex2i (-g_iPos, -g_iPos);
-	glEnd ();
-	*/
-	//
-	///////
 
 	// In double buffer mode the last
 	// two lines should alsways be
@@ -272,22 +185,30 @@ void display2 (void)
 	glClear (GL_COLOR_BUFFER_BIT);
 
 	///////
-	// display your data here ...
-	//
 
-	glBegin (GL_QUADS);
-		glColor3f (1,0,0);
-		glVertex2i (-g_vecPos(1), -g_vecPos(2));
-		glColor3f (0,1,0);
-		glVertex2i (g_vecPos(1), -g_vecPos(2));
-		glColor3f (0,0,1);
-		glVertex2i (g_vecPos(1), g_vecPos(2));
-		glColor3f (1,1,0);
-		glVertex2i (-g_vecPos(1), g_vecPos(2));
-	glEnd ();
+	//transformation
+	//*
+	earth3 = Transformation::rotateArroundVec(earth3, sun3, angleSun);
+	moon3 = Transformation::rotateArroundVec(moon3, sun3, angleSun);
+	moon3 = Transformation::rotateArroundVec(moon3, earth3, angleEarth);
+	//*/
+	/*
+	earth3 = rotate(earth3, -angleSun);
+	moon3 = rotate(moon3, -angleSun);
 
-	//
-	///////
+	moon3 = translate(moon3, -earth3);
+	moon3 = rotate(moon3, -angleEarth);
+	moon3 = translate(moon3, earth3);
+	*/
+	
+	//draw stuff
+	Point pSun(sun3(0), sun3(1));
+	Point pEarth(earth3(0), earth3(1));
+	Point pMoon(moon3(0), moon3(1));
+	
+	drawCircle(pSun, r_sun, c_moon);
+	drawCircle(pEarth, r_earth, c_sun);
+	drawCircle(pMoon, r_moon, c_earth);
 
 	// In double buffer mode the last
 	// two lines should alsways be
@@ -344,6 +265,8 @@ int main (int argc, char **argv)
 	glutInit (&argc, argv);
 	// we have to use double buffer to avoid flickering
 	// TODO: lookup "double buffer", what is it for, how is it used ...
+	// second image is drawn in the background and displayed after it's finished.
+	// -> you don't see the image being drawn
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB);
 	glutInitWindowSize (g_iWidth, g_iHeight);
 	glutCreateWindow ("Uebung 2");
@@ -355,7 +278,6 @@ int main (int argc, char **argv)
 	glutTimerFunc (10, timer, 0);
 	glutKeyboardFunc (keyboard);
 	glutDisplayFunc (display1);
-	//glutReshapeFunc (reshape);	// zuständig für Größenänderungen des Fensters
 	// you might want to add a resize function analog to
 	// Übung1 using code similar to the initGL function ...
 

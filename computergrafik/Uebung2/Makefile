@@ -1,5 +1,5 @@
 CC      = /usr/bin/g++
-CFLAGS  = -Wall -I../Utils
+CFLAGS  = -Wall -I../Utils 
 LFLAGS	= -lGL -lGLU -lglut -L../Utils
 #-Wall: prints "all" warning messages.
 #-g: generates additional symbolic debuggging information for use with gdb debugger.
@@ -7,7 +7,7 @@ LFLAGS	= -lGL -lGLU -lglut -L../Utils
 UTILS_SOURCES = $(wildcard ../Utils/*.cpp)
 UTILS_OBJECTS = $(patsubst %.cpp, %.o, $(UTILS_SOURCES))
 
-SOURCES = 
+SOURCES = Transformation.cpp
 OBJECTS = $(patsubst %.cpp, %.o, $(SOURCES))
 TARGET = Uebung2
 TARGET_DIR = Debug/

@@ -80,9 +80,9 @@ public:
 	void print(){
 		for (int j=0; j<SIZE; j++){ // SPALTE j
 			for (int i=0; i<SIZE; i++){ // ZEILE i
-				cout << m_aatData[i][j] << ",";
+				std::cout << m_aatData[i][j] << ",";
 			}
-			cout << endl;
+			std::cout << std::endl;
 		}
 	}
 

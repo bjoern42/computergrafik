@@ -30,7 +30,7 @@ public:
 		if (this==&vec){ return; 
 			// nothing to do, it's me
 		}
-		for (int i=0; i<SIZE; i++){ 
+		for (int i=0; i<SIZE; i++){
 			m_atData[i] = vec.m_atData[i];
 		}
 	}
