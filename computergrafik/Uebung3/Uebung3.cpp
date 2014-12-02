@@ -25,7 +25,7 @@ void drawPoint(Point p, Color c);
 void drawSinglePoint(Point p, Color c);
 void drawLine(Point p1, Point p2, Color c);
 void drawCircle(Point p, int r, Color c);
-void drawCuboid(Cuboid *cuboid, Color c);
+void drawCuboid(Cuboid *cuboid, float fFocus, Color c);
 
 // window width and height (choose an appropriate size)
 int g_iWidth  = 800;
@@ -58,9 +58,9 @@ void init () {
 	// init timer interval
 	g_iTimerMSecs = 10;
 	float originData[4];
-	originData[0] = 0;
-	originData[1] = 0;
-	originData[2] = 0;
+	originData[0] = 10;
+	originData[1] = 10;
+	originData[2] = 50;
 	originData[3] = 0;
 	
 	CVec4f origin(originData);
@@ -100,7 +100,24 @@ void timer (int value) {
 
 	// the last two lines should always be
 	glutPostRedisplay ();
-	glutTimerFunc (g_iTimerMSecs, timer, 0);	// call timer for next iteration
+	//glutTimerFunc (g_iTimerMSecs, timer, 0);	// call timer for next iteration
+}
+
+void drawXYAxis(Color c, int width, int height, int meassurement){
+	int meassurementLength = 10;
+	Point x1(-width/2, 0);
+	Point x2(width/2, 0);
+	Point y1(0, -height/2);
+	Point y2(0, height/2);
+	drawLine(x1, x2, c);
+	drawLine(y1, y2, c);
+	
+	for(int i=0; i< width; i+=meassurement){
+		drawLine(Point(i, -meassurementLength/2), Point(i, meassurementLength/2), c);
+		drawLine(Point(-i, -meassurementLength/2), Point(-i, meassurementLength/2), c);
+		drawLine(Point(-meassurementLength/2, i), Point(meassurementLength/2, i), c);
+		drawLine(Point(-meassurementLength/2, -i), Point(meassurementLength/2, -i), c);
+	}
 }
 
 // display callback function
@@ -109,14 +126,11 @@ void display1 (void) {
 	///////
 	
 	//draw stuff
+	Color c_axis(0,255,0);
+	drawXYAxis(c_axis, g_iWidth, g_iHeight, 50);
+	
 	Color c(255,0,0);
-	Point p(10, 10);
-	Point p2(10, 10);
-	//drawLine(p, p2, c);
-	//drawSinglePoint(p2, c);
-	
-	
-	drawCuboid(cuboid, c);
+	drawCuboid(cuboid, 10, c);
 
 	// In double buffer mode the last
 	// two lines should alsways be
@@ -149,36 +163,36 @@ void drawCircle(Point p, int r, Color c){
 	glEnd();
 }
 
-void drawCuboid(Cuboid *cuboid, Color c){
-	CVec4f *points = cuboid->getPoints();
-	for(int i=0; i<8; i++){
-		cout << points[i](0) << "/" << points[i](1) << "/" << points[i](2) << "/" << points[i](3) << endl;
-	}
-	p.projektZ(40, cuboid);
+Point convertToPoint(CVec4f vec){
+	return Point(vec(0), vec(1));
+}
+
+void drawCuboid(Cuboid *cuboid, float fFocus, Color c){
+	p.projektZ(fFocus, cuboid);
 	
 	glBegin(GL_POINTS);
 	glColor3f(c.r, c.g, c.b);
 	
-	cout << "-----------------------------" << endl;
-	for(int i=0; i<8; i++){
-		cout << points[i](0) << "/" << points[i](1) << "/" << points[i](2) << "/" << points[i](3) << endl;
-	}
-	
+	//*
 	//front
-	b.bhamLine(Point(points[0](0), points[0](1)), Point(points[1](0), points[1](1)), c);
-	b.bhamLine(Point(points[0](0), points[0](1)), Point(points[2](0), points[2](1)), c);
-	b.bhamLine(Point(points[1](0), points[1](1)), Point(points[3](0), points[3](1)), c);
-	b.bhamLine(Point(points[2](0), points[2](1)), Point(points[3](0), points[3](1)), c);
+	b.bhamLine(convertToPoint(cuboid->getFrontBottomLeft()), convertToPoint(cuboid->getFrontBottomRight()), c);
+	b.bhamLine(convertToPoint(cuboid->getFrontBottomLeft()), convertToPoint(cuboid->getFrontTopLeft()), c);
+	b.bhamLine(convertToPoint(cuboid->getFrontTopLeft()), convertToPoint(cuboid->getFrontTopRight()), c);
+	b.bhamLine(convertToPoint(cuboid->getFrontTopRight()), convertToPoint(cuboid->getFrontBottomRight()), c);
+	glColor3f(0, 0, 255);
 	//back
-	b.bhamLine(Point(points[4](0), points[4](1)), Point(points[5](0), points[5](1)), c);
-	b.bhamLine(Point(points[4](0), points[4](1)), Point(points[6](0), points[6](1)), c);
-	b.bhamLine(Point(points[5](0), points[5](1)), Point(points[7](0), points[7](1)), c);
-	b.bhamLine(Point(points[6](0), points[6](1)), Point(points[7](0), points[7](1)), c);
+	b.bhamLine(convertToPoint(cuboid->getFrontTopLeft()), convertToPoint(cuboid->getBackTopLeft()), c);
+	b.bhamLine(convertToPoint(cuboid->getFrontTopRight()), convertToPoint(cuboid->getBackTopRight()), c);
+	b.bhamLine(convertToPoint(cuboid->getFrontBottomRight()), convertToPoint(cuboid->getBackBottomRight()), c);
+	b.bhamLine(convertToPoint(cuboid->getBackTopLeft()), convertToPoint(cuboid->getBackTopRight()), c);
+	b.bhamLine(convertToPoint(cuboid->getBackTopRight()), convertToPoint(cuboid->getBackBottomRight()), c);
+	/*
 	//front to back
 	b.bhamLine(Point(points[0](0), points[0](1)), Point(points[4](0), points[4](1)), c);
 	b.bhamLine(Point(points[1](0), points[1](1)), Point(points[5](0), points[5](1)), c);
 	b.bhamLine(Point(points[2](0), points[2](1)), Point(points[6](0), points[6](1)), c);
 	b.bhamLine(Point(points[3](0), points[3](1)), Point(points[7](0), points[7](1)), c);
+	*/
 	glEnd();
 }
 
@@ -202,6 +216,7 @@ int main (int argc, char **argv) {
 	// Übung1 using code similar to the initGL function ...
 
 	// start main loop
+	display1();
 	glutMainLoop ();
 	
 	destroy(); // free stuff
