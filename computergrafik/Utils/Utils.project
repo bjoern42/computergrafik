@@ -97,5 +97,9 @@
     <File Name="Color.hpp"/>
     <File Name="Point.cpp"/>
     <File Name="Point.hpp"/>
+    <File Name="Cuboid.h"/>
+    <File Name="Cuboid.cpp"/>
+    <File Name="mat.h"/>
+    <File Name="vec.h"/>
   </VirtualDirectory>
 </CodeLite_Project>

@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=peterlustig
-Date                   :=11/10/14
+Date                   :=11/11/14
 CodeLitePath           :="/home/peterlustig/.codelite"
 LinkerName             :=/usr/bin/g++ 
 SharedObjectLinkerName :=/usr/bin/g++ -shared -fPIC
@@ -36,12 +36,12 @@ ObjectsFileList        :="Uebung1.txt"
 PCHCompileFlags        :=
 MakeDirCommand         :=mkdir -p
 LinkOptions            :=  
-IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). 
+IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). $(IncludeSwitch)../Utils 
 IncludePCH             := 
 RcIncludePath          := 
 Libs                   := $(LibrarySwitch)GL $(LibrarySwitch)GLU $(LibrarySwitch)glut 
 ArLibs                 :=  "GL" "GLU" "glut" 
-LibPath                := $(LibraryPathSwitch). 
+LibPath                := $(LibraryPathSwitch). $(LibraryPathSwitch)../Utils 
 
 ##
 ## Common variables
@@ -73,15 +73,14 @@ Objects=$(Objects0)
 all: $(OutputFile)
 
 $(OutputFile): $(IntermediateDirectory)/.d $(Objects) 
-	@$(MakeDirCommand) $(@D)
-	@echo "" > $(IntermediateDirectory)/.d
-	@echo $(Objects0)  > $(ObjectsFileList)
-	$(LinkerName) $(OutputSwitch)$(OutputFile) @$(ObjectsFileList) $(LibPath) $(Libs) $(LinkOptions)
 
 $(IntermediateDirectory)/.d:
 	@test -d ./Debug || $(MakeDirCommand) ./Debug
 
 PreBuild:
+	@echo Executing Pre Build commands ...
+	make
+	@echo Done
 
 
 ##

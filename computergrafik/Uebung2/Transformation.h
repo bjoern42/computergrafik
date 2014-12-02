@@ -1,8 +1,8 @@
 #ifndef TRANSFORMATION_H
 #define TRANSFORMATION_H
 
-#include "vec.h"
-#include "mat.h"
+#include <vec.h>
+#include <mat.h>
 #include <math.h> 
 
 class Transformation

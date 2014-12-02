@@ -20,6 +20,9 @@ $(TARGET): $(TARGET).o $(UTILS_OBJECTS) $(OBJECTS)
 $(TARGET).o : $(TARGET).cpp
 	$(CC) $(CFLAGS) -c $^ 
 	
+$(OBJECTS): $(SOURCES)
+	$(CC) $(CFLAGS) -c $^
+	
 run: $(TARGET)
 	./$(TARGET_DIR)$(TARGET)
 
