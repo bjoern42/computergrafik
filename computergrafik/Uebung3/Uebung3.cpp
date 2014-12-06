@@ -60,12 +60,12 @@ void init () {
 	float originData[4];
 	originData[0] = 10;
 	originData[1] = 10;
-	originData[2] = 50;
+	originData[2] = -10;
 	originData[3] = 0;
 	
 	CVec4f origin(originData);
 	
-	cuboid = new Cuboid(origin, 50, 50, 50);
+	cuboid = new Cuboid(origin, 10, 10, 10);
 }
 
 // function to initialize the view to ortho-projection
@@ -127,10 +127,10 @@ void display1 (void) {
 	
 	//draw stuff
 	Color c_axis(0,255,0);
-	drawXYAxis(c_axis, g_iWidth, g_iHeight, 50);
+	drawXYAxis(c_axis, g_iWidth, g_iHeight, 10);
 	
 	Color c(255,0,0);
-	drawCuboid(cuboid, 10, c);
+	drawCuboid(cuboid, 100, c);
 
 	// In double buffer mode the last
 	// two lines should alsways be
@@ -181,18 +181,16 @@ void drawCuboid(Cuboid *cuboid, float fFocus, Color c){
 	b.bhamLine(convertToPoint(cuboid->getFrontTopRight()), convertToPoint(cuboid->getFrontBottomRight()), c);
 	glColor3f(0, 0, 255);
 	//back
+	b.bhamLine(convertToPoint(cuboid->getBackBottomLeft()), convertToPoint(cuboid->getBackBottomRight()), c);
+	b.bhamLine(convertToPoint(cuboid->getBackBottomLeft()), convertToPoint(cuboid->getBackTopLeft()), c);
+	b.bhamLine(convertToPoint(cuboid->getBackTopLeft()), convertToPoint(cuboid->getBackTopRight()), c);
+	b.bhamLine(convertToPoint(cuboid->getBackTopRight()), convertToPoint(cuboid->getBackBottomRight()), c);
+	//diagonal
 	b.bhamLine(convertToPoint(cuboid->getFrontTopLeft()), convertToPoint(cuboid->getBackTopLeft()), c);
 	b.bhamLine(convertToPoint(cuboid->getFrontTopRight()), convertToPoint(cuboid->getBackTopRight()), c);
 	b.bhamLine(convertToPoint(cuboid->getFrontBottomRight()), convertToPoint(cuboid->getBackBottomRight()), c);
-	b.bhamLine(convertToPoint(cuboid->getBackTopLeft()), convertToPoint(cuboid->getBackTopRight()), c);
-	b.bhamLine(convertToPoint(cuboid->getBackTopRight()), convertToPoint(cuboid->getBackBottomRight()), c);
-	/*
-	//front to back
-	b.bhamLine(Point(points[0](0), points[0](1)), Point(points[4](0), points[4](1)), c);
-	b.bhamLine(Point(points[1](0), points[1](1)), Point(points[5](0), points[5](1)), c);
-	b.bhamLine(Point(points[2](0), points[2](1)), Point(points[6](0), points[6](1)), c);
-	b.bhamLine(Point(points[3](0), points[3](1)), Point(points[7](0), points[7](1)), c);
-	*/
+	b.bhamLine(convertToPoint(cuboid->getFrontBottomLeft()), convertToPoint(cuboid->getBackBottomLeft()), c);
+
 	glEnd();
 }
 

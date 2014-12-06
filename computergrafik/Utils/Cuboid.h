@@ -8,6 +8,7 @@ class Cuboid{
 	private:
 		CVec4f *points;
 		float height, length, depth;
+		float increaseBy(float init, float incr);
 	public:
 		Cuboid(CVec4f origin, float height, float length, float depth);
 		~Cuboid();

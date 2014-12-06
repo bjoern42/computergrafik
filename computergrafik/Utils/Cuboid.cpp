@@ -12,44 +12,52 @@ Cuboid::Cuboid(CVec4f origin, float height, float length, float depth){
 	this->points[0] = origin;
 	
 	//front bottom right
-	tmp[0] += length;
+	tmp[0] = increaseBy(tmp[0], length);
 	this->points[1] = CVec4f(tmp);
 	
 	//front top left
 	origin.getData(tmp);
-	tmp[1] += height;
+	tmp[1] = increaseBy(tmp[1], height);
 	this->points[2] = CVec4f(tmp);
 	
 	//front top right
 	origin.getData(tmp);
-	tmp[0] += length;
-	tmp[1] += height;
+	tmp[0] = increaseBy(tmp[0], length);
+	tmp[1] = increaseBy(tmp[1], height);
 	this->points[3] = CVec4f(tmp);
 	
 	//back bottom left
 	origin.getData(tmp);
-	tmp[2] -= depth;
+	tmp[2] = increaseBy(tmp[2], depth);
 	this->points[4] = CVec4f(tmp);
 	
 	//back bottom right
 	origin.getData(tmp);
-	tmp[2] -= depth;
-	tmp[0] += length;
+	tmp[2] = increaseBy(tmp[2], depth);
+	tmp[0] = increaseBy(tmp[0], length);
 	this->points[5] = CVec4f(tmp);
 	
 	//back top left
 	origin.getData(tmp);
-	tmp[2] -= depth;
-	tmp[1] += height;
+	tmp[2] = increaseBy(tmp[2], depth);
+	tmp[1] = increaseBy(tmp[1], height);
 	this->points[6] = CVec4f(tmp);
 	
 	//back top right
 	origin.getData(tmp);
-	tmp[2] -= depth;
-	tmp[1] += height;
-	tmp[0] += length;
+	tmp[2] = increaseBy(tmp[2], depth);
+	tmp[1] = increaseBy(tmp[1], height);
+	tmp[0] = increaseBy(tmp[0], length);
 	this->points[7] = CVec4f(tmp);
+
+	std::cout << "cuboid: {" << std::endl;
+	for(int i=0; i<8; i++){
+		std::cout << "\t points["<<i<<"]: (" << this->points[i](0) << "/" << this->points[i](1) << "/" << this->points[i](2) << ")" << std::endl;
+	}
+	std::cout << "}" << std::endl;
 }
+
+
 
 Cuboid::~Cuboid(){
 	delete [] points;
@@ -94,4 +102,10 @@ float Cuboid::getDepth(){
 	return this->depth;
 }
 
+float Cuboid::increaseBy(float init, float incr){
+	if(init >= 0){
+		return init + incr;
+	}
+	return init - incr;
+}
 
