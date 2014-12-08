@@ -50,7 +50,7 @@ int g_iTimerMSecs;
 Bresenham b(drawPoint);
 Projection p;
 
-Cuboid *cuboid;
+Cuboid *c1, *c2, *c3;
 
 //
 /////////////////////////////////////////////////////////////
@@ -67,8 +67,20 @@ void init () {
 	
 	CVec4f origin(originData);
 	
-	cuboid = new Cuboid(origin, 200, 200, 50);
-	cuboid->printPoints();
+	c1 = new Cuboid(origin, 200, 200, 50);
+	
+	originData[0] = -80;
+	originData[1] = -150;
+	originData[2] = -50;
+	origin = CVec4f(originData);
+	c2 = new Cuboid(origin, 50, 50 , 10);
+	
+	originData[0] = -200;
+	originData[1] = 50;
+	originData[2] = -50;
+	origin = CVec4f(originData);
+	c3 = new Cuboid(origin, 100, 50, 100);
+	//c1->printPoints();
 }
 
 // function to initialize the view to ortho-projection
@@ -88,7 +100,9 @@ void initGL () {
 }
 
 void destroy(){
-	delete cuboid;
+	delete c1;
+	delete c2;
+	delete c3;
 }
 
 // timer callback function
@@ -128,12 +142,19 @@ void display1 (void) {
 	glClear (GL_COLOR_BUFFER_BIT);
 	///////
 	
+	float fFocus = 50;
 	//draw stuff
 	Color c(0.0f, 255.0f, 0.0f);
 	drawXYAxis(c, g_iWidth, g_iHeight, 10);
 	
 	c.set(2.4f, 0.1f, 0.1f);
-	drawCuboid(cuboid, 50, c);
+	drawCuboid(c1, fFocus, c);
+	
+	c.set(0.1f, 2.4f, 0.1f);
+	drawCuboid(c2, fFocus, c);
+	
+	c.set(0.1f, 0.1f, 2.4f);
+	drawCuboid(c3, fFocus, c);
 		
 	// In double buffer mode the last
 	// two lines should alsways be
