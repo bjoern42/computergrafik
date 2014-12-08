@@ -24,9 +24,8 @@ CVec4f Projection::projectZ(float fFocus, CVec4f pSicht){
 	p_Array[3][3] = 1;
 	
 	CMat4f p(p_Array);
-	pSicht = p * pSicht;
+	//pSicht = p * pSicht;
 	pSicht = pSicht * (1/(1 - pSicht(2)/fFocus));
-	//pSicht = pSicht * (-fFocus/pSicht(2));
 	return pSicht;
 }
 
