@@ -11,8 +11,10 @@ class Cuboid{
 		float increaseBy(float init, float incr);
 	public:
 		Cuboid(CVec4f origin, float height, float length, float depth);
+		Cuboid(CVec4f points[8]);
 		~Cuboid();
 		CVec4f* getPoints();
+		void printPoints();
 		CVec4f getFrontBottomLeft();
 		CVec4f getFrontBottomRight();
 		CVec4f getFrontTopLeft();

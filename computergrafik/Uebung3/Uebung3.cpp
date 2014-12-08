@@ -27,6 +27,8 @@ void drawLine(Point p1, Point p2, Color c);
 void drawCircle(Point p, int r, Color c);
 void drawCuboid(Cuboid *cuboid, float fFocus, Color c);
 
+Point convertToPoint(CVec4f vec);
+
 // window width and height (choose an appropriate size)
 int g_iWidth  = 800;
 int g_iHeight = 800;
@@ -58,14 +60,15 @@ void init () {
 	// init timer interval
 	g_iTimerMSecs = 10;
 	float originData[4];
-	originData[0] = 10;
-	originData[1] = 10;
-	originData[2] = -10;
-	originData[3] = 0;
+	originData[0] = 50;
+	originData[1] = 50;
+	originData[2] = -50;
+	originData[3] = 1;
 	
 	CVec4f origin(originData);
 	
-	cuboid = new Cuboid(origin, 10, 10, 10);
+	cuboid = new Cuboid(origin, 200, 200, 50);
+	cuboid->printPoints();
 }
 
 // function to initialize the view to ortho-projection
@@ -104,14 +107,14 @@ void timer (int value) {
 }
 
 void drawXYAxis(Color c, int width, int height, int meassurement){
-	int meassurementLength = 10;
+	int meassurementLength = 6;
 	Point x1(-width/2, 0);
 	Point x2(width/2, 0);
 	Point y1(0, -height/2);
 	Point y2(0, height/2);
 	drawLine(x1, x2, c);
 	drawLine(y1, y2, c);
-	
+
 	for(int i=0; i< width; i+=meassurement){
 		drawLine(Point(i, -meassurementLength/2), Point(i, meassurementLength/2), c);
 		drawLine(Point(-i, -meassurementLength/2), Point(-i, meassurementLength/2), c);
@@ -126,12 +129,12 @@ void display1 (void) {
 	///////
 	
 	//draw stuff
-	Color c_axis(0,255,0);
-	drawXYAxis(c_axis, g_iWidth, g_iHeight, 10);
+	Color c(0.0f, 255.0f, 0.0f);
+	drawXYAxis(c, g_iWidth, g_iHeight, 10);
 	
-	Color c(255,0,0);
-	drawCuboid(cuboid, 100, c);
-
+	c.set(2.4f, 0.1f, 0.1f);
+	drawCuboid(cuboid, 50, c);
+		
 	// In double buffer mode the last
 	// two lines should alsways be
 	glFlush ();
@@ -168,29 +171,33 @@ Point convertToPoint(CVec4f vec){
 }
 
 void drawCuboid(Cuboid *cuboid, float fFocus, Color c){
-	p.projektZ(fFocus, cuboid);
+	Cuboid* projectedCuboid = p.projektZ(fFocus, cuboid);
 	
 	glBegin(GL_POINTS);
 	glColor3f(c.r, c.g, c.b);
 	
 	//*
 	//front
-	b.bhamLine(convertToPoint(cuboid->getFrontBottomLeft()), convertToPoint(cuboid->getFrontBottomRight()), c);
-	b.bhamLine(convertToPoint(cuboid->getFrontBottomLeft()), convertToPoint(cuboid->getFrontTopLeft()), c);
-	b.bhamLine(convertToPoint(cuboid->getFrontTopLeft()), convertToPoint(cuboid->getFrontTopRight()), c);
-	b.bhamLine(convertToPoint(cuboid->getFrontTopRight()), convertToPoint(cuboid->getFrontBottomRight()), c);
-	glColor3f(0, 0, 255);
+	b.bhamLine(convertToPoint(projectedCuboid->getFrontBottomLeft()), convertToPoint(projectedCuboid->getFrontBottomRight()), c);
+	b.bhamLine(convertToPoint(projectedCuboid->getFrontBottomLeft()), convertToPoint(projectedCuboid->getFrontTopLeft()), c);
+	b.bhamLine(convertToPoint(projectedCuboid->getFrontTopLeft()), convertToPoint(projectedCuboid->getFrontTopRight()), c);
+	b.bhamLine(convertToPoint(projectedCuboid->getFrontTopRight()), convertToPoint(projectedCuboid->getFrontBottomRight()), c);
+	c.darken(0.2f);
+	glColor3f(c.r, c.g, c.b);
 	//back
-	b.bhamLine(convertToPoint(cuboid->getBackBottomLeft()), convertToPoint(cuboid->getBackBottomRight()), c);
-	b.bhamLine(convertToPoint(cuboid->getBackBottomLeft()), convertToPoint(cuboid->getBackTopLeft()), c);
-	b.bhamLine(convertToPoint(cuboid->getBackTopLeft()), convertToPoint(cuboid->getBackTopRight()), c);
-	b.bhamLine(convertToPoint(cuboid->getBackTopRight()), convertToPoint(cuboid->getBackBottomRight()), c);
+	b.bhamLine(convertToPoint(projectedCuboid->getBackBottomLeft()), convertToPoint(projectedCuboid->getBackBottomRight()), c);
+	b.bhamLine(convertToPoint(projectedCuboid->getBackBottomLeft()), convertToPoint(projectedCuboid->getBackTopLeft()), c);
+	b.bhamLine(convertToPoint(projectedCuboid->getBackTopLeft()), convertToPoint(projectedCuboid->getBackTopRight()), c);
+	b.bhamLine(convertToPoint(projectedCuboid->getBackTopRight()), convertToPoint(projectedCuboid->getBackBottomRight()), c);
+	c.lighten(0.5f);
+	glColor3f(c.r, c.g, c.b);
 	//diagonal
-	b.bhamLine(convertToPoint(cuboid->getFrontTopLeft()), convertToPoint(cuboid->getBackTopLeft()), c);
-	b.bhamLine(convertToPoint(cuboid->getFrontTopRight()), convertToPoint(cuboid->getBackTopRight()), c);
-	b.bhamLine(convertToPoint(cuboid->getFrontBottomRight()), convertToPoint(cuboid->getBackBottomRight()), c);
-	b.bhamLine(convertToPoint(cuboid->getFrontBottomLeft()), convertToPoint(cuboid->getBackBottomLeft()), c);
+	b.bhamLine(convertToPoint(projectedCuboid->getFrontTopLeft()), convertToPoint(projectedCuboid->getBackTopLeft()), c);
+	b.bhamLine(convertToPoint(projectedCuboid->getFrontTopRight()), convertToPoint(projectedCuboid->getBackTopRight()), c);
+	b.bhamLine(convertToPoint(projectedCuboid->getFrontBottomRight()), convertToPoint(projectedCuboid->getBackBottomRight()), c);
+	b.bhamLine(convertToPoint(projectedCuboid->getFrontBottomLeft()), convertToPoint(projectedCuboid->getBackBottomLeft()), c);
 
+	delete projectedCuboid;
 	glEnd();
 }
 

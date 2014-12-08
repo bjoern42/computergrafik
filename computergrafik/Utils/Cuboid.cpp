@@ -1,5 +1,16 @@
 #include "Cuboid.h"
 
+Cuboid::Cuboid(CVec4f points[8]){
+	int i;
+	this->height = -1;
+	this->length = -1;
+	this->depth = -1;
+	this->points = new CVec4f[8];
+	for(i=0; i<8; i++){
+		this->points[i] = points[i];
+	}
+}
+
 Cuboid::Cuboid(CVec4f origin, float height, float length, float depth){
 	float tmp[4];
 	this->points = new CVec4f[8];
@@ -49,15 +60,15 @@ Cuboid::Cuboid(CVec4f origin, float height, float length, float depth){
 	tmp[1] = increaseBy(tmp[1], height);
 	tmp[0] = increaseBy(tmp[0], length);
 	this->points[7] = CVec4f(tmp);
+}
 
-	std::cout << "cuboid: {" << std::endl;
+void Cuboid::printPoints(){
+	std::cout << "cuboid points: {" << std::endl;
 	for(int i=0; i<8; i++){
 		std::cout << "\t points["<<i<<"]: (" << this->points[i](0) << "/" << this->points[i](1) << "/" << this->points[i](2) << ")" << std::endl;
 	}
 	std::cout << "}" << std::endl;
 }
-
-
 
 Cuboid::~Cuboid(){
 	delete [] points;
