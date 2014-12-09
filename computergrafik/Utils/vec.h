@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <math.h>
 
 template<class T, unsigned SIZE> class CMatrix;
 
@@ -176,7 +177,37 @@ public:
 		for (int i=0; i<SIZE-1; i++){
 			std::cout << m_atData[i] << ",";
 		}
-		std::cout << m_atData[SIZE-1] << ")";
+		std::cout << m_atData[SIZE-1] << ")^t";
+	}
+	
+	T scalarProduct(CVector<T, SIZE> &b, int dim){
+		T sProduct = 0;
+		if (dim < 2){
+			dim = getDimension();
+		}
+		for(int i=0; i<dim; i++){
+			sProduct += m_atData[i] * b(i);
+		}
+		//std::cout << "sProduct: " << sProduct << "  " << sqrt(sProduct) << std::endl;
+		return sqrt(sProduct);
+	}
+
+	CVector<T, SIZE> getNormedVector(int dim){
+		T sProduct = scalarProduct(*this, dim);
+		return (*this) * (1/sProduct);
+	}
+
+	CVector<T, SIZE> crossProduct3D(CVector<T, SIZE> &b){
+		if(getDimension() < 3){
+			return NULL;
+		}
+		
+		CVector<T, SIZE> vec;
+		
+		vec(0) = m_atData[1] * b(2) - m_atData[2] * b(1);
+		vec(1) = m_atData[2] * b(0) - m_atData[0] * b(2);
+		vec(2) = m_atData[0] * b(1) - m_atData[1] * b(0);
+		return vec;
 	}
 private:
 	T m_atData[SIZE];

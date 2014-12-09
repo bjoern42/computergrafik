@@ -7,21 +7,21 @@ LFLAGS	= -lGL -lGLU -lglut -L../Utils
 UTILS_SOURCES = $(wildcard ../Utils/*.cpp)
 UTILS_OBJECTS = $(patsubst %.cpp, %.o, $(UTILS_SOURCES))
 
-SOURCES = Projection.cpp
-OBJECTS = $(patsubst %.cpp, %.o, $(SOURCES))
+#SOURCES = Projection.cpp
+#OBJECTS = $(patsubst %.cpp, %.o, $(SOURCES))
 TARGET = Uebung3
 TARGET_DIR = Debug/
 
 all: $(TARGET)
 
-$(TARGET): $(TARGET).o $(UTILS_OBJECTS) $(OBJECTS)
-	$(CC) $(CFLAGS) -o $(TARGET_DIR)$@ $^ $(LFLAGS) 
+$(TARGET): $(TARGET).o $(UTILS_OBJECTS) $(OBJECTS) 
+	$(CC) $(CFLAGS) -o $(TARGET_DIR)$@ $^ $(LFLAGS)
 	
-$(TARGET).o : $(TARGET).cpp
+$(TARGET).o : $(TARGET).cpp 
 	$(CC) $(CFLAGS) -c $^ 
 	
-$(OBJECTS): $(SOURCES)
-	$(CC) $(CFLAGS) -c $^
+#$(OBJECTS): $(SOURCES)
+#	$(CC) $(CFLAGS) -c $^
 	
 run: $(TARGET)
 	./$(TARGET_DIR)$(TARGET)

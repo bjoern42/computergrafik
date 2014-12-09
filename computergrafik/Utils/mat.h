@@ -6,15 +6,16 @@
 
 template <class T, unsigned SIZE> class CVector;
 
+// [row][column]
 // template square matrix class for SIMPLE data types 
 template <class T, unsigned SIZE> class CMatrix 
 {
 public:
-
+	
 	CMatrix<T, SIZE> () 
 	{
-		for (int j=0; j<SIZE; j++) {
-			for (int i=0; i<SIZE; i++) {
+		for (int i=0; i<SIZE; i++) {
+			for (int j=0; j<SIZE; j++) {
 				m_aatData[i][j] = T(0);
 			}
 		}
@@ -26,8 +27,8 @@ public:
 
 	CMatrix<T, SIZE> (const T aatData[SIZE][SIZE]) 
 	{
-		for (int j=0; j<SIZE; j++) {
-			for (int i=0; i<SIZE; i++) {
+		for (int i=0; i<SIZE; i++) {
+			for (int j=0; j<SIZE; j++) {
 				m_aatData[i][j] = aatData[i][j];
 			}
 		}
@@ -35,8 +36,8 @@ public:
 
 	CMatrix<T, SIZE> (const CMatrix<T, SIZE> &mat) 
 	{
-		for (int j=0; j<SIZE; j++) {
-			for (int i=0; i<SIZE; i++) {
+		for (int i=0; i<SIZE; i++) {
+			for (int j=0; j<SIZE; j++) {
 				m_aatData[i][j] = mat.m_aatData[i][j];
 			}
 		}
@@ -71,23 +72,35 @@ public:
 
 	CVector<T, SIZE> operator * (const CVector<T, SIZE> &vec) {
 		CVector<T, SIZE> buf;
-		for (int j=0; j<SIZE; j++) // SPALTE j
-			for (int i=0; i<SIZE; i++) // ZEILE i
+		for (int i=0; i<SIZE; i++) {// Zeile i
+			for (int j=0; j<SIZE; j++){ // Spalte j
 				buf(i) += m_aatData[i][j]*vec(j);
+			}
+		}
 		return buf;
 	}
 	
 	void print(){
-		for (int j=0; j<SIZE; j++){ // SPALTE j
-			for (int i=0; i<SIZE; i++){ // ZEILE i
+		for (int i=0; i<SIZE; i++){ // Zeile i
+			for (int j=0; j<SIZE-1; j++){ // Spalte j
 				std::cout << m_aatData[i][j] << ",";
 			}
-			std::cout << std::endl;
+			std::cout << m_aatData[i][SIZE-1] << std::endl;
 		}
 	}
 
+	CMatrix<T, SIZE> transpose(){
+		CMatrix<T, SIZE> buf;
+		for (int i=0;i<SIZE; i++){ // Zeile i
+			for (int j=0; j<SIZE; j++){ // Spalte j
+				buf(i,j) = m_aatData[j][i];
+			}
+		}
+		return buf;
+	}
+	
 private:
-
+	// [row][column]
 	T m_aatData[SIZE][SIZE];
 };
 

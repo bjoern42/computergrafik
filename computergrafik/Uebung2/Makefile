@@ -7,8 +7,8 @@ LFLAGS	= -lGL -lGLU -lglut -L../Utils
 UTILS_SOURCES = $(wildcard ../Utils/*.cpp)
 UTILS_OBJECTS = $(patsubst %.cpp, %.o, $(UTILS_SOURCES))
 
-SOURCES = Transformation.cpp
-OBJECTS = $(patsubst %.cpp, %.o, $(SOURCES))
+#SOURCES = Transformation.cpp
+#OBJECTS = $(patsubst %.cpp, %.o, $(SOURCES))
 TARGET = Uebung2
 TARGET_DIR = Debug/
 
@@ -20,8 +20,8 @@ $(TARGET): $(TARGET).o $(UTILS_OBJECTS) $(OBJECTS)
 $(TARGET).o : $(TARGET).cpp
 	$(CC) $(CFLAGS) -c $^ 
 	
-$(OBJECTS): $(SOURCES)
-	$(CC) $(CFLAGS) -c $^
+#$(OBJECTS): $(SOURCES)
+#	$(CC) $(CFLAGS) -c $^
 	
 run: $(TARGET)
 	./$(TARGET_DIR)$(TARGET)
