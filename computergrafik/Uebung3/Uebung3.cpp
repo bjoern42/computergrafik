@@ -26,9 +26,10 @@ void drawPoint(Point p, Color c);
 void drawSinglePoint(Point p, Color c);
 void drawLine(Point p1, Point p2, Color c);
 void drawCircle(Point p, int r, Color c);
-void drawCuboid(Cuboid *cuboid, float fFocus, Color c);
+void drawCuboid(Cuboid *cuboid, float fFocus);
 void drawXYAxis(Color c, int width, int height, int meassurement);
 
+CVec4f translateToOriginAndRotate(CVec4f vP, float degree, CMat4f (*getRotMat)(CVec4f v, float f));
 void rotateWorldAxis(float degree, CMat4f (*getRotMat)(CVec4f v, float f));
 void rotateCameraAxis(float degree, CMat4f (*getRotMat)(CVec4f v, float f));
 void moveCamera(View* view, CVec4f vT);
@@ -57,7 +58,7 @@ const float F_FOCUS_STEP = 10;
 const float F_FOCUS_INITIAL = -200;
 const float ROTATION_STEP = 5;
 const float MOVE_STEP = 5;
-const int AMOUNT_CUBOIDS = 3;
+const int AMOUNT_CUBOIDS = 4;
 
 
 Bresenham b(drawPoint);
@@ -69,88 +70,29 @@ View *view;
 /////////////////////////////////////////////////////////////
 
 // function to initialize our own variables
-void init () {
-	
-	//init view
-	float tmp[4];
-	tmp[0] = 0;
-	tmp[1] = 0;
-	tmp[2] = 0;
-	tmp[3] = 1;
-	CVec4f eyePoint(tmp);
-	tmp[2] = -1;
-	CVec4f viewDirection(tmp);
-	tmp[1] = 1;
-	tmp[2] = 0;
-	CVec4f viewUp(tmp);
-	
-	view = new View(eyePoint, viewDirection, viewUp);
-	
-	view->setFocus(F_FOCUS_INITIAL);
-	/*
-	// view um 10/10/10 verschieben
-	tmp[0] = 0;
-	tmp[1] = 0;
-	tmp[2] = F_FOCUS_INITIAL;
-	CVec4f tV(tmp);
-	view->setEyePoint(Transformation::translate3D(view->getEyePoint(), tV));
-	view->setViewZ(Transformation::translate3D(view->getViewZ(), tV));
-	view->setViewY(Transformation::translate3D(view->getViewY(), tV));
-	
-	CMat4f mat = Transformation::getViewToWorldTransMat(view);
-	CMat4f inv_mat = Transformation::getWorldToViewTransMat(view);
-	
-	cout<< "eyepoint: ";view->getEyePoint().print();cout << endl;
-	cout<< "viewDirection: ";view->getViewZ().print();cout << endl;
-	cout<< "viewUp: ";view->getViewY().print();cout << endl;
-	
-	cout << "viewToWorldTransMat: " << endl;mat.print();cout<<endl;
-
-	view->setEyePoint(mat * view->getEyePoint());
-	view->setViewZ(mat * view->getViewZ());
-	view->setViewY(mat * view->getViewY());
-	
-	cout<< "after transformation:" << endl;
-	cout<< "eyepoint: ";view->getEyePoint().print();cout << endl;
-	cout<< "viewDirection: ";view->getViewZ().print();cout << endl;
-	cout<< "viewUp: ";view->getViewY().print();cout << endl;
-	
-	
-	cout << "worldToViewTransMat: " << endl;inv_mat.print();cout<<endl;
-	
-	view->setEyePoint(inv_mat * view->getEyePoint());
-	view->setViewZ(inv_mat * view->getViewZ());
-	view->setViewY(inv_mat * view->getViewY());
-	
-	cout<< "after inverse transformation:" << endl;
-	cout<< "eyepoint: ";view->getEyePoint().print();cout << endl;
-	cout<< "viewDirection: ";view->getViewZ().print();cout << endl;
-	cout<< "viewUp: ";view->getViewY().print();cout << endl;
-	*/
-	
+void init () {	
+	view = new View(F_FOCUS_INITIAL);
+		
 	//init cuboids
-	float originData[4];
-	originData[0] = 50;
-	originData[1] = 50;
-	originData[2] = -50;
-	originData[3] = 1;
+	//x,y,z,height,length,depth,color
+	Color c(2.4f, 0.1f, 0.1f);
+	cuboids[0] = new Cuboid(50, 50, -50, 200, 200, 50, c);
 	
-	CVec4f origin(originData);
+	c.set(0.1f, 2.4f, 0.1f);
+	cuboids[1] = new Cuboid(-80, -150, -50, 50, 50 , 10, c);
 	
-	cuboids[0] = new Cuboid(origin, 200, 200, 50);
+	c.set(0.1f, 0.1f, 2.4f);
+	cuboids[2] = new Cuboid(-200, 50, -50, 50, 100, 100, c);
 	
-	originData[0] = -80;
-	originData[1] = -150;
-	originData[2] = -50;
-	origin = CVec4f(originData);
-	cuboids[1] = new Cuboid(origin, 50, 50 , 10);
-	
-	originData[0] = -200;
-	originData[1] = 50;
-	originData[2] = -50;
-	origin = CVec4f(originData);
-	cuboids[2] = new Cuboid(origin, 100, 50, 100);
-	//c1->printPoints();
+	c.set(0.1f, 2.1f, 2.4f);
+	cuboids[3] = new Cuboid(-50, -50, -25, 100, 50, 50, c);
+}
+
+void destroy(){
+	for(int i=0; i<AMOUNT_CUBOIDS; i++){
+		delete cuboids[i];
+	}
+	delete view;
 }
 
 // function to initialize the view to ortho-projection
@@ -169,73 +111,27 @@ void initGL () {
 	glClearColor (0,0,0,1);
 }
 
-void destroy(){
-	for(int i=0; i<AMOUNT_CUBOIDS; i++){
-		delete cuboids[i];
-	}
-	delete view;
+CVec4f translateToOriginAndRotate(CVec4f vP, float degree, CMat4f (*getRotMat)(CVec4f v, float f)){
+	CMat4f mat = Transformation::get3DTransMat(vP, -vP) * getRotMat(vP, degree) * Transformation::get3DTransMat(vP, vP);
+	return mat * vP;	
 }
 
 void rotateWorldAxis(float degree, CMat4f (*getRotMat)(CVec4f v, float f)){
-	Cuboid *tmp;
-	for(int i=0; i<AMOUNT_CUBOIDS; i++){
-		CVec4f origin = cuboids[i]->getBackBottomLeft();
-		CMat4f mat;
-		mat = Transformation::get3DTransMat(origin, -origin) * getRotMat(origin, degree) * Transformation::get3DTransMat(origin, origin);
-		//mat = getRotMat(origin, degree);
-		
-		tmp = cuboids[i];
-		cuboids[i] = Transformation::transform(cuboids[i], mat);
-		delete tmp;
-	}
+	//=rotate eyePoint and cameraAxis
+	view->setEyePoint(translateToOriginAndRotate(view->getEyePoint(), degree, getRotMat));
+	
+	rotateCameraAxis(degree, getRotMat);
 }
 
 void rotateCameraAxis(float degree, CMat4f (*getRotMat)(CVec4f v, float f)){
-	CVec4f ep = view->getEyePoint();
-	CVec4f vY = view->getViewY();
-	CVec4f vZ = view->getViewZ();
-	CVec4f tmp;
-	CMat4f mat;
-	
-	cout<< "eyepoint: ";view->getEyePoint().print();cout << endl;
-	cout<< "viewX: ";view->getViewX().print();cout << endl;
-	cout<< "viewY: ";view->getViewY().print();cout << endl;
-	cout<< "viewZ: ";view->getViewZ().print();cout << endl;
-	
-	mat = Transformation::get3DTransMat(ep, -ep) * getRotMat(ep, degree) * Transformation::get3DTransMat(ep, ep);
-	tmp = mat * ep;
-	view->setEyePoint(tmp);
-	
-	mat = Transformation::get3DTransMat(vY, -vY) * getRotMat(vY, degree) * Transformation::get3DTransMat(vY, vY);
-	tmp = mat * vY;
-	view->setViewY(tmp);
-	
-	mat = Transformation::get3DTransMat(vZ, -vZ) * getRotMat(vZ, degree) * Transformation::get3DTransMat(vZ, vZ);
-	tmp = mat * vZ;
-	view->setViewZ(tmp);
-	
-	cout<<"-----------------------------------------" << endl;
-	cout<< "eyepoint: ";view->getEyePoint().print();cout << endl;
-	cout<< "viewX: ";view->getViewX().print();cout << endl;
-	cout<< "viewY: ";view->getViewY().print();cout << endl;
-	cout<< "viewZ: ";view->getViewZ().print();cout << endl;
+	view->setViewY(translateToOriginAndRotate(view->getViewY(), degree, getRotMat));
+	view->setViewZ(translateToOriginAndRotate(view->getViewZ(), degree, getRotMat));
+
+	//view->getEyePoint().print(); cout << endl;
 }
 
 void moveCamera(View* view, CVec4f vT){
-	cout<< "eyepoint: ";view->getEyePoint().print();cout << endl;
-	cout<< "viewX: ";view->getViewX().print();cout << endl;
-	cout<< "viewY: ";view->getViewY().print();cout << endl;
-	cout<< "viewZ: ";view->getViewZ().print();cout << endl;
-	
 	view->setEyePoint(Transformation::translate3D(view->getEyePoint(), vT));
-	view->setViewY(Transformation::translate3D(view->getViewY(), vT));
-	view->setViewZ(Transformation::translate3D(view->getViewZ(), vT));
-	
-	cout<<"-----------------------------------------" << endl;
-	cout<< "eyepoint: ";view->getEyePoint().print();cout << endl;
-	cout<< "viewX: ";view->getViewX().print();cout << endl;
-	cout<< "viewY: ";view->getViewY().print();cout << endl;
-	cout<< "viewZ: ";view->getViewZ().print();cout << endl;
 }
 
 void keyboard (unsigned char key, int x, int y) {
@@ -350,14 +246,9 @@ void display1 (void) {
 	Color c(0.0f, 255.0f, 0.0f);
 	drawXYAxis(c, g_iWidth, g_iHeight, 10);
 	
-	c.set(2.4f, 0.1f, 0.1f);
-	drawCuboid(cuboids[0], fFocus, c);
-	
-	c.set(0.1f, 2.4f, 0.1f);
-	drawCuboid(cuboids[1], fFocus, c);
-	
-	c.set(0.1f, 0.1f, 2.4f);
-	drawCuboid(cuboids[2], fFocus, c);
+	for(int i=0; i<AMOUNT_CUBOIDS; i++){
+		drawCuboid(cuboids[i], fFocus);
+	}
 	
 	// In double buffer mode the last
 	// two lines should alsways be
@@ -411,10 +302,14 @@ Point convertToPoint(CVec4f vec){
 	return Point(vec(0), vec(1));
 }
 
-void drawCuboid(Cuboid *cuboid, float fFocus, Color c){
+void drawCuboid(Cuboid *cuboid, float fFocus){
+	cuboid->printPoints();
 	CMat4f inv_mat = Transformation::getWorldToViewTransMat(view);
 	Cuboid* projectedCuboid = Projection::projektZallg(inv_mat, fFocus, cuboid);
 	//Cuboid* projectedCuboid = Projection::projektZ(fFocus, cuboid);
+	Color c = cuboid->getColor();
+	
+	projectedCuboid->printPoints();
 	
 	glBegin(GL_POINTS);
 	glColor3f(c.r, c.g, c.b);
@@ -451,7 +346,7 @@ int main (int argc, char **argv) {
 	// -> you don't see the image being drawn
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB);
 	glutInitWindowSize (g_iWidth, g_iHeight);
-	glutCreateWindow ("Uebung 2");
+	glutCreateWindow ("Uebung 3");
 
 	init ();	// init my variables first
 	initGL ();	// init the GL (i.e. view settings, ...)

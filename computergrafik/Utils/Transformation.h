@@ -21,14 +21,9 @@ class Transformation{
 		static CMat4f get3DRotMatZAxis(CVec4f vP, float degree);
 		static CMat4f get3DRotMatXAxis(CVec4f vP, float degree);
 		static CMat4f get3DRotMatYAxis(CVec4f vP, float degree);
-		static CMat4f get3DRotMat(CVec4f vP, float degree);
-		static CMat4f getViewToWorldRotMat(View *view);
-		static CVec4f rotate3D(CVec4f vP, float degree);
 		static Cuboid* transform(Cuboid *c, CMat4f transformMat);
-		static CMat4f getViewToWorldTransMat(View* view);
+		static CMat4f getViewToWorldRotMat(View *view);
 		static CMat4f getWorldToViewTransMat(View *view);
-		
-		static Cuboid* rotate(Cuboid *c, float degree, CMat4f (*getRotMat)(CVec4f v, float f));
 };
 
 #endif // TRANSFORMATION_H

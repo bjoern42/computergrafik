@@ -180,20 +180,17 @@ public:
 		std::cout << m_atData[SIZE-1] << ")^t";
 	}
 	
-	T scalarProduct(CVector<T, SIZE> &b, int dim){
+	T scalarProduct(CVector<T, SIZE> &b){
 		T sProduct = 0;
-		if (dim < 2){
-			dim = getDimension();
-		}
-		for(int i=0; i<dim; i++){
+		for(int i=0; i<getDimension(); i++){
 			sProduct += m_atData[i] * b(i);
 		}
 		//std::cout << "sProduct: " << sProduct << "  " << sqrt(sProduct) << std::endl;
 		return sqrt(sProduct);
 	}
 
-	CVector<T, SIZE> getNormedVector(int dim){
-		T sProduct = scalarProduct(*this, dim);
+	CVector<T, SIZE> getNormedVector(){
+		T sProduct = scalarProduct(*this);
 		return (*this) * (1/sProduct);
 	}
 

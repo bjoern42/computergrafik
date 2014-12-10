@@ -3,6 +3,7 @@
 CVec4f Projection::projectZ(float fFocus, CVec4f pSicht){
 	float p_Array[4][4];
 	//[row][column]
+	//matrix um homogenisierte (=[3]) zu berechnen
 	p_Array[0][0] = 1;
 	p_Array[0][1] = 0;
 	p_Array[0][2] = 0;
@@ -34,7 +35,7 @@ Cuboid* Projection::projektZ (float fFocus, Cuboid *cuboid){
 		projectedPoints[i] = projectZ(fFocus, points[i]);
 		//std::cout << " -> (" << projectedPoints[i](0) << "/" << projectedPoints[i](1) << "/" << projectedPoints[i](2) << ")" << std::endl;
 	}
-	return new Cuboid(projectedPoints);
+	return new Cuboid(projectedPoints, cuboid->getColor());
 }
 
 CVec4f Projection::projectZallg(CMat4f transformationMat, float fFocus, CVec4f pWorld){
@@ -47,5 +48,5 @@ Cuboid* Projection::projektZallg (CMat4f transformationMat, float fFocus, Cuboid
 	for(int i=0; i<8; i++){
 		projectedPoints[i] = projectZallg(transformationMat, fFocus, points[i]);
 	}
-	return new Cuboid(projectedPoints);
+	return new Cuboid(projectedPoints, cuboid->getColor());
 }

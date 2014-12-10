@@ -124,6 +124,7 @@ CVec4f Transformation::translate3D(CVec4f vP, CVec4f vT){
 }
 
 CMat4f Transformation::get3DRotMatZAxis(CVec4f vP, float degree){
+	//script 3-35
 	float degree_rad = degree * M_PI / 180;
 	float r_cos = cos(degree_rad);
 	float r_sin = sin(degree_rad);
@@ -149,6 +150,7 @@ CMat4f Transformation::get3DRotMatZAxis(CVec4f vP, float degree){
 }
 
 CMat4f Transformation::get3DRotMatXAxis(CVec4f vP, float degree){
+	//script 3-36
 	float degree_rad = degree * M_PI / 180;
 	float r_cos = cos(degree_rad);
 	float r_sin = sin(degree_rad);
@@ -174,6 +176,7 @@ CMat4f Transformation::get3DRotMatXAxis(CVec4f vP, float degree){
 }
 
 CMat4f Transformation::get3DRotMatYAxis(CVec4f vP, float degree){
+	//script 3-37
 	float degree_rad = degree * M_PI / 180;
 	float r_cos = cos(degree_rad);
 	float r_sin = sin(degree_rad);
@@ -198,30 +201,11 @@ CMat4f Transformation::get3DRotMatYAxis(CVec4f vP, float degree){
 	return CMat4f(t_Array);
 }
 
-CMat4f Transformation::get3DRotMat(CVec4f vP, float degree){
-	float degree_rad = degree * M_PI / 180;
-	float r_cos = cos(degree_rad);
-	float r_sin = sin(degree_rad);
-	float t_Array[4][4];
-	
-	CMat4f zAxisRot = get3DRotMatZAxis(vP, degree);
-	CMat4f xAxisRot = get3DRotMatXAxis(vP, degree);
-	CMat4f yAxisRot = get3DRotMatYAxis(vP, degree);
-	
-	return zAxisRot * xAxisRot * yAxisRot;
-}
-
-CVec4f Transformation::rotate3D(CVec4f vP, float degree){
-	CMat4f rotMat = get3DRotMat(vP, degree);
-	CMat4f transMat = get3DTransMat(vP, -vP);
-	CMat4f transMat_inv = get3DTransMat(vP, vP);
-	return transMat * rotMat * transMat_inv * vP;
-}
-
 CMat4f Transformation::getViewToWorldRotMat(View *view){
-	CVec4f x = view->getViewX().getNormedVector(3);
-	CVec4f y = view->getViewY().getNormedVector(3);
-	CVec4f z = view->getViewZ().getNormedVector(3);
+	//script 3-51
+	CVec4f x = view->getViewX().getNormedVector();
+	CVec4f y = view->getViewY().getNormedVector();
+	CVec4f z = view->getViewZ().getNormedVector();
 
 	CMat4f rotMat;
 	for(int i=0; i<3; i++){
@@ -239,42 +223,21 @@ CMat4f Transformation::getViewToWorldRotMat(View *view){
 	return rotMat;
 }
 
-Cuboid* Transformation::rotate(Cuboid *c, float degree, CMat4f (*getRotMat)(CVec4f v, float f)){
-	CVec4f *points = c->getPoints();
-	CVec4f transformatedPoints[8];
-	for(int i=0; i<8; i++){
-		CMat4f rotMat = get3DRotMat(points[i], degree);
-		CMat4f transMat = get3DTransMat(points[i], -points[i]);
-		CMat4f transMat_inv = get3DTransMat(points[i], points[i]);
-		transformatedPoints[i] = transMat * rotMat * transMat_inv * points[i];
-	}
-	return new Cuboid(transformatedPoints);
-}
-
 Cuboid* Transformation::transform(Cuboid *c, CMat4f transformMat){
 	CVec4f *points = c->getPoints();
 	CVec4f transformatedPoints[8];
 	for(int i=0; i<8; i++){
 		transformatedPoints[i] = transformMat * points[i];
 	}
-	return new Cuboid(transformatedPoints);
-}
-		
-CMat4f Transformation::getViewToWorldTransMat(View *view){
-	CVec4f eyePoint = view->getEyePoint();
-
-	CMat4f transMat = get3DTransMat(eyePoint, -eyePoint);
-
-	CMat4f rotMat = getViewToWorldRotMat(view);
-	
-	return transMat * rotMat;
+	return new Cuboid(transformatedPoints, c->getColor());
 }
 
 CMat4f Transformation::getWorldToViewTransMat(View *view){
 	CVec4f eyePoint = view->getEyePoint();
-
-	CMat4f transMat = get3DTransMat(eyePoint, eyePoint);
-	CMat4f rotMat = getViewToWorldRotMat(view);
+	CVec4f origin;
 	
-	return transMat * rotMat.transpose();
+	CMat4f transMat = get3DTransMat(origin, eyePoint);
+	CMat4f rotMat = getViewToWorldRotMat(view).transpose();
+	
+	return rotMat * transMat;
 }

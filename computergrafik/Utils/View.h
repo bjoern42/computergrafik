@@ -9,16 +9,20 @@ class View{
 		float fFocus;
 		CVec4f eyePoint, viewZ, viewY;
 		
+		void init(CVec4f eyePoint, CVec4f viewZ, CVec4f viewY, float fFocus);
+		
 	public:
-		View(CVec4f eyePoint, CVec4f viewZ, CVec4f viewY);
+		View(float fFocus);
+		View(CVec4f eyePoint, CVec4f viewZ, CVec4f viewY, float fFocus);
 		~View();
+		
+		void setEyePoint(CVec4f v);
+		void setViewZ(CVec4f v);
+		void setViewY(CVec4f v);
 		CVec4f getEyePoint();
 		CVec4f getViewZ();
 		CVec4f getViewY();
 		CVec4f getViewX();
-		void setEyePoint(CVec4f v);
-		void setViewZ(CVec4f v);
-		void setViewY(CVec4f v);
 		void setFocus(float fFocus);
 		float getFocus();
 };
