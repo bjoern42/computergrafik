@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <iostream>
+#include <math.h>
 using namespace std;
 
 // might be you have to swith to
@@ -51,7 +52,7 @@ int g_WinHeight = 800;
 
 
 // Kugel
-// Nur ein Wert für Punkt gegeben?! -> Annahme, dass Mittelpunkt der Kugel bei (M, 0, 0) ist...
+// Kugel soll auf Z-Achse zentriert sein -> Mittelpunkt Kugel = (0,0,M)
 int M= 100;
 int R= 50;
 
@@ -232,9 +233,8 @@ float solveQuadraticABCFormula(float a, float b, float c){
 CVec3f intersect (CVec3f EyePos, CVec3f ViewDir) {
 	CVec3f hit;
 	CVec3f sphereOrigin;
-	sphereOrigin(0) = M;
-	sphereOrigin(1) = 0;
-	sphereOrigin(2) = 0;
+	//Auf Z-Achse zentriert -> (0,0,M)
+	sphereOrigin(2) = M;
 	
 	// x1,2 = v²*t² + 2*v*(e-m)*t + (e-m)²-r²
 	float a = ViewDir * ViewDir;
@@ -332,7 +332,53 @@ Color phong(CVec3f HitPos, CVec3f ViewDir) {
 	///////////////////////
 
 	
-	Color c;
+	CVec3f lightOrigin;
+	lightOrigin(0) = xL;
+	lightOrigin(1) = yL; 
+	lightOrigin(2) = zL;
+	
+	//genormter Richtungsvektor des Lichts
+	CVec3f L = (lightOrigin - HitPos).getNormedVector();
+	
+	CVec3f sphereOrigin;
+	//Auf Z-Achse zentriert -> (0,0,M)
+	sphereOrigin(2) = M;
+
+	CVec3f N = (sphereOrigin - HitPos).getNormedVector();
+	CVec3f V = ViewDir.getNormedVector();
+	
+	CVec3f R = N * (L * N) * 2 - L;
+	
+	CVec3f IDiff, ISpec, IAmb, IGes;
+	float tmp;
+	//diffuse
+	tmp = L * N;
+	tmp = max(0, tmp);
+	IDiff(0) = tmp * Id(0) * Kd(0);
+	IDiff(1) = tmp * Id(1) * Kd(1);
+	IDiff(2) = tmp * Id(2) * Kd(2);
+	
+	//specular
+	tmp = pow((R * V), exp);
+	tmp = max(0, tmp);
+	ISpec(0) = tmp * Is(0) * Ks(0);
+	ISpec(1) = tmp * Is(1) * Ks(1);
+	ISpec(2) = tmp * Is(2) * Ks(2);
+	
+	//ambient
+	IAmb(0) = Ia(0) * Ka(0);
+	IAmb(1) = Ia(1) * Ka(1);
+	IAmb(2) = Ia(2) * Ka(2);
+	
+	IGes(0) = IDiff(0) + ISpec(0) + IAmb(0);
+	IGes(1) = IDiff(1) + ISpec(1) + IAmb(1);
+	IGes(2) = IDiff(2) + ISpec(2) + IAmb(2);
+	
+	IGes(0) = min(1, max(0, IGes(0)));
+	IGes(1) = min(1, max(0, IGes(1)));
+	IGes(2) = min(1, max(0, IGes(2)));
+	
+	Color c(IGes(0), IGes(1), IGes(2));
 
 	return c;
 }
