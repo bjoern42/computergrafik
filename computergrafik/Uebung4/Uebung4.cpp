@@ -47,8 +47,8 @@ char g_Buffer[3*TEX_RES];
 GLuint g_TexID = 0;
 
 // Auflösung des Hauptfensters (kann sich durch User ändern)
-int g_WinWidth = 800;
-int g_WinHeight = 800;
+int g_WinWidth = 400;
+int g_WinHeight = 400;
 
 
 // Kugel
@@ -56,9 +56,17 @@ int g_WinHeight = 800;
 int M= 100;
 int R= 50;
 
-float rK= 1.0;
-float gK= 1.0;
-float bK= 1.0;
+const int R_INTERVAL = 1;
+const int R_MIN = 1;
+const int R_MAX = 200;
+
+float rK= 1.0f;
+float gK= 1.0f;
+float bK= 1.0f;
+
+const float RGB_MIN = 0.0f;
+const float RGB_MAX = 255.0f;
+const float RGB_INTERVAL = 5.0f;
 
 // Licht
 float xL= 0;
@@ -475,10 +483,54 @@ void keyboard(unsigned char c, int x, int y) {
 
 		/////////////////////////////////
 
-
+		case 'd':	R -= R_INTERVAL;
+					if(R < R_MIN){
+						R = R_MIN;
+					}
+					break;
+					
+		case 'D':	R += R_INTERVAL;
+					if(R > R_MAX){
+						R = R_MAX;
+					}
+					break;
 		/////////////////////////////////
 
-		
+		case 'r':	rK -= RGB_INTERVAL;
+					if(rK < RGB_MIN){
+						rK = RGB_MIN;
+					}
+					break;
+					
+		case 'R':	rK += RGB_INTERVAL;
+					if(rK > RGB_MAX){
+						rK = RGB_MAX;
+					}
+					break;
+					
+		case 'g':	gK -= RGB_INTERVAL;
+					if(gK < RGB_MIN){
+						gK = RGB_MIN;
+					}
+					break;
+					
+		case 'G':	gK += RGB_INTERVAL;
+					if(gK > RGB_MAX){
+						gK = RGB_MAX;
+					}
+					break;
+					
+		case 'b':	bK -= RGB_INTERVAL;
+					if(bK < RGB_MIN){
+						bK = RGB_MIN;
+					}
+					break;
+					
+		case 'B':	bK += RGB_INTERVAL;
+					if(bK > RGB_MAX){
+						bK = RGB_MAX;
+					}
+					break;
 		/////////////////////////////////
 
 
