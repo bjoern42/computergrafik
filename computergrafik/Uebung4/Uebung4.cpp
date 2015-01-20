@@ -233,7 +233,16 @@ float solveQuadraticABCFormula(float a, float b, float c){
 		float sqrtRoot = sqrt(tmp);
 		float x1 = (-b + sqrtRoot) / (2 * a);
 		float x2 = (-b - sqrtRoot) / (2 * a);
-		return min(x1, x2);
+		
+		//return min positive of x1, x2
+		tmp = min(x1, x2);
+		if(tmp < 0){
+			tmp = max(x1, x2);
+			if(tmp < 0){
+				return -1;
+			}
+		}
+		return tmp;
 	}
 	return -1;
 }
@@ -352,16 +361,21 @@ Color phong(CVec3f HitPos, CVec3f ViewDir) {
 	//Auf Z-Achse zentriert -> (0,0,M)
 	sphereOrigin(2) = M;
 
-	CVec3f N = (sphereOrigin - HitPos).getNormedVector();
+	CVec3f N = (HitPos - sphereOrigin).getNormedVector();
 	CVec3f V = ViewDir.getNormedVector();
 	
-	CVec3f R = N * (L * N) * 2 - L;
-	
-	CVec3f IDiff, ISpec, IAmb, IGes;
 	float tmp;
-	//diffuse
 	tmp = L * N;
 	tmp = max(0, tmp);
+
+	CVec3f R = N * tmp * 2 - L;
+	R=R.getNormedVector();
+	
+	CVec3f IDiff, ISpec, IAmb, IGes;
+	//diffuse
+	//tmp = L * N;
+	//tmp = max(0, tmp);
+
 	IDiff(0) = tmp * Id(0) * Kd(0);
 	IDiff(1) = tmp * Id(1) * Kd(1);
 	IDiff(2) = tmp * Id(2) * Kd(2);
